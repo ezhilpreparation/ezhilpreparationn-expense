@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useLogin } from '../hooks/useAuth';
 import { Eye, EyeOff } from 'lucide-react';
+import GoogleLoginButton from '../components/GoogleLoginButton';
 
 function SignIn() {
   const [email, setEmail] = useState('');
@@ -117,6 +118,26 @@ function SignIn() {
               >
                 {login.isPending ? 'Signing in...' : 'Sign In'}
               </button>
+            </div>
+
+            {/* Divider */}
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-gray-300" />
+              </div>
+              <div className="relative flex justify-center text-sm">
+                <span className="px-2 bg-white text-gray-500">Or continue with</span>
+              </div>
+            </div>
+
+            {/* Google Login */}
+            <div>
+              <GoogleLoginButton 
+                text="signin_with"
+                theme="outline"
+                size="large"
+                width="100%"
+              />
             </div>
           </form>
         </div>

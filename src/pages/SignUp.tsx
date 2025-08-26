@@ -4,6 +4,7 @@ import { useSignup } from '../hooks/useAuth';
 import { validatePassword } from '../utils/passwordValidation';
 import PasswordStrengthIndicator from '../components/PasswordStrengthIndicator';
 import { Eye, EyeOff } from 'lucide-react';
+import GoogleLoginButton from '../components/GoogleLoginButton';
 
 function SignUp() {
   const [firstName, setFirstName] = useState('');
@@ -229,6 +230,26 @@ function SignUp() {
               >
                 {signup.isPending ? 'Creating account...' : 'Sign Up'}
               </button>
+            </div>
+
+            {/* Divider */}
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-gray-300" />
+              </div>
+              <div className="relative flex justify-center text-sm">
+                <span className="px-2 bg-white text-gray-500">Or continue with</span>
+              </div>
+            </div>
+
+            {/* Google Login */}
+            <div>
+              <GoogleLoginButton 
+                text="signup_with"
+                theme="outline"
+                size="large"
+                width="100%"
+              />
             </div>
           </form>
         </div>

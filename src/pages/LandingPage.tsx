@@ -12,6 +12,7 @@ import {
   X,
 } from "lucide-react";
 import { useState } from "react";
+import GoogleLoginButton from "../components/GoogleLoginButton";
 
 function LandingPage() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -158,6 +159,24 @@ function LandingPage() {
             >
               See How It Works
             </button>
+          </div>
+          
+          {/* Google Login Option */}
+          <div className="mt-8 max-w-sm mx-auto">
+            <div className="relative mb-4">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-gray-300" />
+              </div>
+              <div className="relative flex justify-center text-sm">
+                <span className="px-2 bg-gray-50 text-gray-500">Or sign in with</span>
+              </div>
+            </div>
+            <GoogleLoginButton 
+              text="continue_with"
+              theme="outline"
+              size="large"
+              width="100%"
+            />
           </div>
         </div>
       </section>
