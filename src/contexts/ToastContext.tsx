@@ -1,5 +1,20 @@
-import { createContext, useContext, useState, useCallback, ReactNode } from 'react';
-import { Toast, ToastContextType } from '../types/toast';
+import { createContext, useContext, ReactNode } from 'react';
+import { toast, ToastOptions } from 'react-toastify';
+
+interface ToastContextType {
+  addToast: (options: {
+    type: 'success' | 'error' | 'warning' | 'info';
+    title: string;
+    message?: string;
+    duration?: number;
+    action?: {
+      label: string;
+      onClick: () => void;
+    };
+  }) => void;
+  removeToast: (id: string) => void;
+  clearToasts: () => void;
+}
 
 const ToastContext = createContext<ToastContextType | undefined>(undefined);
 
@@ -16,36 +31,67 @@ interface ToastProviderProps {
 }
 
 export const ToastProvider = ({ children }: ToastProviderProps) => {
-  const [toasts, setToasts] = useState<Toast[]>([]);
+  const addToast = ({ type, title, message, duration = 5000, action }: {
+    type: 'success' | 'error' | 'warning' | 'info';
+    title: string;
+    message?: string;
+    duration?: number;
+    action?: {
+      label: string;
+      onClick: () => void;
+    };
+  }) => {
+    const content = (
+      <div>
+        <div className="font-semibold">{title}</div>
+        {message && <div className="text-sm mt-1">{message}</div>}
+        {action && (
+          <button
+            onClick={action.onClick}
+            className="text-sm font-medium mt-2 underline hover:no-underline"
+          >
+            {action.label}
+          </button>
+        )}
+      </div>
+    );
 
-  const addToast = useCallback((toast: Omit<Toast, 'id'>) => {
-    const id = Math.random().toString(36).substr(2, 9);
-    const newToast: Toast = {
-      ...toast,
-      id,
-      duration: toast.duration || 5000,
+    const options: ToastOptions = {
+      autoClose: duration > 0 ? duration : false,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
     };
 
-    setToasts(prev => [...prev, newToast]);
-
-    // Auto remove toast after duration
-    if ((newToast.duration ?? 5000) > 0) {
-      setTimeout(() => {
-        removeToast(id);
-      }, newToast.duration ?? 5000);
+    switch (type) {
+      case 'success':
+        toast.success(content, options);
+        break;
+      case 'error':
+        toast.error(content, options);
+        break;
+      case 'warning':
+        toast.warning(content, options);
+        break;
+      case 'info':
+        toast.info(content, options);
+        break;
+      default:
+        toast(content, options);
     }
-  }, []);
+  };
 
-  const removeToast = useCallback((id: string) => {
-    setToasts(prev => prev.filter(toast => toast.id !== id));
-  }, []);
+  const removeToast = (id: string) => {
+    toast.dismiss(id);
+  };
 
-  const clearToasts = useCallback(() => {
-    setToasts([]);
-  }, []);
+  const clearToasts = () => {
+    toast.dismiss();
+  };
 
   return (
-    <ToastContext.Provider value={{ toasts, addToast, removeToast, clearToasts }}>
+    <ToastContext.Provider value={{ addToast, removeToast, clearToasts }}>
       {children}
     </ToastContext.Provider>
   );

@@ -1,9 +1,10 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Suspense, lazy } from 'react';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import { ToastProvider } from './contexts/ToastContext';
 import { PasswordResetProvider } from './contexts/PasswordResetContext';
-import ToastContainer from './components/Toast/ToastContainer';
 import ProtectedRoute from './components/ProtectedRoute';
 import PublicRoute from './components/PublicRoute';
 import ProtectedPasswordResetRoute from './components/ProtectedPasswordResetRoute';
@@ -141,7 +142,21 @@ function App() {
                 <Route path="*" element={<Navigate to="/" replace />} />
               </Routes>
             </Router>
-            <ToastContainer />
+            <ToastContainer
+              position="top-right"
+              autoClose={5000}
+              hideProgressBar={false}
+              newestOnTop={false}
+              closeOnClick
+              rtl={false}
+              pauseOnFocusLoss
+              draggable
+              pauseOnHover
+              theme="light"
+              className="!top-4 !right-4"
+              toastClassName="!rounded-lg !shadow-lg"
+              bodyClassName="!p-4"
+            />
           </Suspense>
         </ToastProvider>
       </PasswordResetProvider>
