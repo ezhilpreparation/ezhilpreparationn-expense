@@ -30,8 +30,8 @@ export default function LandingPage() {
             >
               How it Works
             </button>
-            <Link to="/login" className="text-gray-700 hover:text-indigo-600">
-              Login
+            <Link to="/signin" className="text-gray-700 hover:text-indigo-600">
+              Sign In
             </Link>
             <Link
               to="/signup"
@@ -60,8 +60,8 @@ export default function LandingPage() {
               >
                 How it Works
               </button>
-              <Link to="/login" className="text-gray-700 hover:text-indigo-600">
-                Login
+              <Link to="/signin" className="text-gray-700 hover:text-indigo-600">
+                Sign In
               </Link>
               <Link
                 to="/signup"
