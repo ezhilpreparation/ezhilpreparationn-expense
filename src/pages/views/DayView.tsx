@@ -294,19 +294,7 @@ function DayView() {
                     </div>
                     
                     <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-3 lg:space-x-4 text-xs sm:text-sm text-gray-500">
-                      <span>Transaction ID: {transaction.id.slice(0, 8)}...</span>
-                      {transaction.account && (
-                        <span className="hidden sm:inline flex items-center">
-                          • {getAccountIcon(transaction.account.type)} 
-                          <span className="ml-1">{transaction.account.name}</span>
-                        </span>
-                      )}
-                      {transaction.paymentMode && (
-                        <span className="hidden md:inline flex items-center">
-                          • {getPaymentModeIcon(transaction.paymentMode.type)} 
-                          <span className="ml-1">{transaction.paymentMode.name}</span>
-                        </span>
-                      )}
+                      <span>{new Date(transaction.txnAt || '').toLocaleDateString()}</span>
                     </div>
                   </div>
                 </div>

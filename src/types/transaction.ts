@@ -1,51 +1,54 @@
 export interface Transaction {
   id: string;
   type: 1 | 2 | 3; // 1 = Expense, 2 = Income, 3 = Transfer
-  date: number;
-  month: number;
-  year: number;
-  time: {
-    hour: number;
-    minute: number;
-    second: number;
-    nano: number;
-  };
+  txnAt: string;
   amount: number;
-  categoryId?: string;
-  accountId: string;
-  fromAccountId?: string;
-  toAccountId?: string;
-  paymentModeId?: string;
-  fromPaymentModeId?: string; // For transfers
-  toPaymentModeId?: string; // For transfers
   description: string;
-  tags?: string[];
   category?: {
     id: string;
     name: string;
     icon: string;
     color: string;
+    type: number;
+    deletable: boolean;
   };
   account?: {
     id: string;
     name: string;
-    type: string;
-  };
-  toAccount?: {
-    id: string;
-    name: string;
-    type: string;
+    type: number;
+    default: boolean;
   };
   fromAccount?: {
     id: string;
     name: string;
-    type: string;
+    type: number;
+    default: boolean;
+  };
+  toAccount?: {
+    id: string;
+    name: string;
+    type: number;
+    default: boolean;
   };
   paymentMode?: {
     id: string;
     name: string;
     type: number;
   };
+  fromPaymentMode?: {
+    id: string;
+    name: string;
+    type: number;
+  };
+  toPaymentMode?: {
+    id: string;
+    name: string;
+    type: number;
+  };
+  tags?: {
+    id: string;
+    name: string;
+  }[];
   createdAt: string;
   updatedAt: string;
 }
@@ -55,13 +58,8 @@ export interface CreateTransactionData {
   date: number;
   month: number;
   year: number;
-  time: {
-    hour: number;
-    minute: number;
-    second: number;
-    nano: number;
-  };
   amount: number;
+  description: string;
   categoryId?: string;
   accountId: string;
   fromAccountId?: string;
@@ -69,27 +67,25 @@ export interface CreateTransactionData {
   paymentModeId?: string;
   fromPaymentModeId?: string;
   toPaymentModeId?: string;
-  description: string;
+  tagIds?: string[];
   tags?: string[];
 }
 
 export interface UpdateTransactionData {
   type?: 1 | 2 | 3;
-  date?: string;
-  time?: {
-    hour: number;
-    minute: number;
-    second: number;
-    nano: number;
-  };
+  date?: number;
+  month?: number;
+  year?: number;
   amount?: number;
+  description?: string;
   categoryId?: string;
   accountId?: string;
+  fromAccountId?: string;
   toAccountId?: string;
   paymentModeId?: string;
   fromPaymentModeId?: string;
   toPaymentModeId?: string;
-  description?: string;
+  tagIds?: string[];
   tags?: string[];
 }
 

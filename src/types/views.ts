@@ -12,14 +12,22 @@ export interface MonthSummaryResponse {
 export interface DayTransaction {
   id: string;
   type: number | null;
-  date: number;
-  month: number;
-  year: number;
+  txnAt: string;
   amount: number;
   categoryId: string | null;
   accountId: string | null;
   description: string | null;
   tagIds: string[] | null;
+  account?: {
+    id: string;
+    name: string;
+    type: number;
+  };
+  paymentMode?: {
+    id: string;
+    name: string;
+    type: number;
+  };
 }
 
 export interface DaySummary {

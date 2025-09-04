@@ -27,7 +27,7 @@ export const useTransactions = (page = 0, size = 10, filters?: TransactionFilter
       if (filters?.startDate) params.append('startDate', filters.startDate);
       if (filters?.endDate) params.append('endDate', filters.endDate);
 
-      const response = await apiClient.get(`/transactions?${params.toString()}`);
+      const response = await apiClient.get(`/transactions/all?${params.toString()}`);
       return response.data.data || {
         content: [],
         totalElements: 0,
@@ -68,17 +68,6 @@ export const useCreateTransaction = () => {
         endpoint = '/transactions/income';
       } else if (transactionType === 'transfer') {
         endpoint = '/transactions/transfer';
-        // For transfer, map accountId to fromAccountId
-        const transferData = {
-          ...transactionData,
-          fromAccountId: transactionData.accountId,
-          fromPaymentModeId: transactionData.paymentModeId,
-        };
-        delete transferData.accountId;
-        delete transferData.paymentModeId;
-        delete transferData.categoryId;
-        const response = await apiClient.post(endpoint, transferData);
-        return response.data;
       }
       
       const response = await apiClient.post(endpoint, transactionData);
@@ -122,17 +111,6 @@ export const useUpdateTransaction = () => {
         endpoint = `/transactions/income/${id}`;
       } else if (transactionType === 'transfer') {
         endpoint = `/transactions/transfer/${id}`;
-        // For transfer, map accountId to fromAccountId
-        const transferData = {
-          ...data,
-          fromAccountId: data.accountId,
-          fromPaymentModeId: data.paymentModeId,
-        };
-        delete transferData.accountId;
-        delete transferData.paymentModeId;
-        delete transferData.categoryId;
-        const response = await apiClient.put(endpoint, transferData);
-        return response.data;
       }
       
       const response = await apiClient.put(endpoint, data);

@@ -28,7 +28,6 @@ const tabs = ['Expense', 'Income', 'Transfer'];
 interface FormData {
   type: 1 | 2 | 3;
   date: string;
-  time: string;
   amount: number;
   categoryId?: string;
   accountId: string;
@@ -69,7 +68,6 @@ function TransactionForm() {
     defaultValues: {
       type: 1,
       date: new Date().toISOString().split('T')[0],
-      time: new Date().toTimeString().slice(0, 5),
       amount: 0,
       categoryId: '',
       accountId: '',
@@ -95,16 +93,19 @@ function TransactionForm() {
       const transactionType = transaction.type;
       setActiveTab(transactionType === 1 ? 0 : transactionType === 2 ? 1 : 2);
       setValue('type', transactionType);
-      const month = transaction.month.toString().length === 1 ? '0' + transaction.month.toString() : transaction.month.toString();
-      const date = transaction.date.toString().length === 1 ? '0' + transaction.date.toString() : transaction.date.toString();
-      setValue('date', '' + (transaction.year.toString().padStart(2, '0') + '-' + month.padStart(2, '0') + '-' + date).toString());
-      // setValue('time', `${transaction.time.hour.toString().padStart(2, '0')}:${transaction.time.minute.toString().padStart(2, '0')}`);
+      
+      // Parse txnAt to get date
+      const txnDate = new Date(transaction.txnAt);
+      setValue('date', txnDate.toISOString().split('T')[0]);
+      
       setValue('amount', transaction.amount);
       setValue('categoryId', transaction.category?.id || '');
       setValue('accountId', transaction.account?.id || '');
       setValue('toAccountId', transaction.toAccount?.id || '');
       setValue('fromAccountId', transaction.fromAccount?.id || '');
       setValue('paymentModeId', transaction.paymentMode?.id || '');
+      setValue('fromPaymentModeId', transaction.fromPaymentMode?.id || '');
+      setValue('toPaymentModeId', transaction.toPaymentMode?.id || '');
       setValue('description', transaction.description);
       setValue('tags', transaction.tags?.map(tag => tag.name) || []);
     }
@@ -139,26 +140,21 @@ function TransactionForm() {
   const onSubmit = async (data: FormData) => {
     try {
       const [year, month, day] = data.date.split("-").map(Number);
-      const [hours, minutes] = data.time.split(':').map(Number);
 
       const transactionData: CreateTransactionData = {
         type: data.type,
         date: day,
         month: month,
         year: year,
-        time: {
-          hour: hours,
-          minute: minutes,
-          second: 0,
-          nano: 0
-        },
         amount: data.amount,
+        description: data.description,
         categoryId: data.type === 3 ? undefined : data.categoryId,
         accountId: data.accountId,
+        fromAccountId: data.type === 3 ? data.accountId : undefined,
         toAccountId: data.type === 3 ? data.toAccountId : undefined,
         paymentModeId: data.type === 3 ? data.fromPaymentModeId : data.paymentModeId,
+        fromPaymentModeId: data.type === 3 ? data.fromPaymentModeId : undefined,
         toPaymentModeId: data.type === 3 ? data.toPaymentModeId : undefined,
-        description: data.description,
         tags: data.tags
       };
 
@@ -262,30 +258,16 @@ function TransactionForm() {
         {/* )} */}
 
         {/* Date and Time */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
-          <div className="bg-white rounded-lg shadow p-4 sm:p-6">
-            <DatePicker
-              value={watchedValues.date}
-              onChange={(date) => setValue('date', date)}
-              label="Date"
-              required
-            />
-            {errors.date && (
-              <p className="mt-1 text-xs sm:text-sm text-red-600">{errors.date.message}</p>
-            )}
-          </div>
-
-          <div className="bg-white rounded-lg shadow p-4 sm:p-6">
-            <TimePicker
-              value={watchedValues.time}
-              onChange={(time) => setValue('time', time)}
-              label="Time"
-              required
-            />
-            {errors.time && (
-              <p className="mt-1 text-xs sm:text-sm text-red-600">{errors.time.message}</p>
-            )}
-          </div>
+        <div className="bg-white rounded-lg shadow p-4 sm:p-6">
+          <DatePicker
+            value={watchedValues.date}
+            onChange={(date) => setValue('date', date)}
+            label="Date"
+            required
+          />
+          {errors.date && (
+            <p className="mt-1 text-xs sm:text-sm text-red-600">{errors.date.message}</p>
+          )}
         </div>
 
         {/* Amount */}
@@ -590,16 +572,14 @@ function TransactionForm() {
           {/* Selected Tags (user-added or selected default tags) */}
           <div className="flex flex-wrap gap-2 mt-2">
             {watch('tags')?.map((tag) => (
-              <div className="flex flex-wrap gap-2 mt-2">
-                <button
-                  key={tag}
-                  type="button"
-                  onClick={() => toggleTag(tag)}
-                  className="px-2 sm:px-3 py-1 rounded-lg text-xs sm:text-sm border bg-indigo-600 text-white border-indigo-600"
-                >
-                  {tag}
-                </button>
-              </div>
+              <button
+                key={tag}
+                type="button"
+                onClick={() => toggleTag(tag)}
+                className="px-2 sm:px-3 py-1 rounded-lg text-xs sm:text-sm border bg-indigo-600 text-white border-indigo-600"
+              >
+                {tag}
+              </button>
             ))}
             {/* Default Tags (only those not already selected) */}
             {watch('tags').length < defaultTags.length && (
