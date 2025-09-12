@@ -15,3 +15,13 @@ export interface UpdateTagData {
 export interface MergeTagData {
   tagId: string;
 }
+
+export interface PaginatedTags {
+  content: Tags[];
+  totalElements: number;
+  totalPages: number;
+  size: number;
+  number: number;
+  first: boolean;
+  last: boolean;
+}

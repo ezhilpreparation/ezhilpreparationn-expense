@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Edit, Trash2, GitMerge, Tag as TagIcon, Search } from 'lucide-react';
+import { Edit, Trash2, GitMerge, Tag as TagIcon, Search, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useTags, useUpdateTag, useMergeTag, useDeleteTag } from '../hooks/useTags';
 import TagMergeModal from '../components/TagMergeModal';
 import TagUpdateModal from '../components/TagUpdateModal';
@@ -13,17 +13,23 @@ interface TagWithTransactions {
 
 function Tags() {
   const [searchTerm, setSearchTerm] = useState('');
+  const [currentPage, setCurrentPage] = useState(0);
+  const [pageSize] = useState(10);
   const [selectedTag, setSelectedTag] = useState<TagWithTransactions | null>(null);
   const [isMergeModalOpen, setIsMergeModalOpen] = useState(false);
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
-  const { data: tagData = [], isLoading } = useTags();
+  const { data: tagsData, isLoading } = useTags(currentPage, pageSize);
   const updateTag = useUpdateTag();
   const mergeTag = useMergeTag();
   const deleteTag = useDeleteTag();
 
-  const filteredTags = tagData.filter(({ tag }) =>
+  const tags = tagsData?.content || [];
+  const totalPages = tagsData?.totalPages || 0;
+  const totalElements = tagsData?.totalElements || 0;
+
+  const filteredTags = tags.filter(({ tag }) =>
     tag.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
@@ -80,12 +86,11 @@ function Tags() {
 
   if (isLoading) {
     return (
-      <div className="p-4 sm:p-6 max-w-7xl mx-auto">
+      <div className="p-3 sm:p-4 lg:p-6 max-w-7xl mx-auto">
         <div className="animate-pulse">
           <div className="h-8 bg-gray-200 rounded w-48 mb-6"></div>
-          <div className="h-12 bg-gray-200 rounded mb-6"></div>
           <div className="space-y-4">
-            {[1, 2, 3, 4].map((i) => (
+            {[1, 2, 3, 4, 5].map((i) => (
               <div key={i} className="h-16 bg-gray-200 rounded"></div>
             ))}
           </div>
@@ -96,13 +101,15 @@ function Tags() {
 
   return (
     <div className="p-3 sm:p-4 lg:p-6 max-w-7xl mx-auto">
-      <div className="mb-4">
-        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Tags</h1>
-        <p className="text-sm sm:text-base text-gray-600 mt-1">Organize your transactions with custom tags</p>
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 sm:mb-8">
+        <div>
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Tags</h1>
+          <p className="text-sm sm:text-base text-gray-600 mt-1">Organize your transactions with custom tags</p>
+        </div>
       </div>
 
       {/* Search */}
-      <div className="bg-white rounded-lg shadow p-4 sm:p-6 mb-4 sm:mb-6">
+      <div className="bg-white rounded-lg shadow p-3 sm:p-4 lg:p-6 mb-4 sm:mb-6">
         <div className="relative">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4 sm:w-5 sm:h-5" />
           <input
@@ -117,14 +124,14 @@ function Tags() {
 
       {/* Tags List */}
       <div className="bg-white rounded-lg shadow">
-        <div className="p-4 sm:p-6 border-b border-gray-200">
+        <div className="p-3 sm:p-4 lg:p-6 border-b border-gray-200">
           <h2 className="text-base sm:text-lg font-semibold text-gray-900">
-            All Tags ({filteredTags.length})
+            All Tags ({totalElements})
           </h2>
         </div>
 
         {filteredTags.length === 0 ? (
-          <div className="p-6 sm:p-8 text-center">
+          <div className="p-6 sm:p-8 lg:p-10 text-center">
             <div className="text-gray-400 mb-4">
               <TagIcon className="w-10 h-10 sm:w-12 sm:h-12 mx-auto mb-3 sm:mb-4" />
             </div>
@@ -134,19 +141,21 @@ function Tags() {
             <p className="text-sm sm:text-base text-gray-500 mb-4">
               {searchTerm 
                 ? `No tags match "${searchTerm}"`
-                : 'Create your first tag to start organizing your transactions'}
+                : 'Tags will appear here when you add them to transactions'}
             </p>
           </div>
         ) : (
           <div className="divide-y divide-gray-200">
             {filteredTags.map((item) => (
-              <div key={item.tag.id} className="p-3 sm:p-4 lg:p-6 flex items-center justify-between">
+              <div key={item.tag.id} className="p-3 sm:p-4 lg:p-6 flex items-center justify-between gap-2 sm:gap-3 lg:gap-4">
                 <div className="flex items-center space-x-2 sm:space-x-3 lg:space-x-4 flex-1 min-w-0">
                   <div className="bg-indigo-100 p-2 sm:p-3 rounded-lg flex-shrink-0">
                     <TagIcon className="w-4 h-4 sm:w-5 sm:h-5 text-indigo-600" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <h3 className="text-sm sm:text-base font-medium text-gray-900 truncate">{item.tag.name}</h3>
+                    <h3 className="text-sm sm:text-base font-medium text-gray-900 truncate">
+                      {item.tag.name}
+                    </h3>
                     <p className="text-xs sm:text-sm text-gray-500">
                       {item.transactions} transaction{item.transactions !== 1 ? 's' : ''}
                     </p>
@@ -156,7 +165,7 @@ function Tags() {
                 <div className="flex items-center space-x-1 sm:space-x-2">
                   <button
                     onClick={() => openMergeModal(item)}
-                    disabled={tagData.length <= 1}
+                    disabled={tags.length <= 1}
                     className="p-1.5 sm:p-2 text-gray-400 hover:text-blue-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed rounded-md hover:bg-gray-50"
                     title="Merge tag"
                   >
@@ -181,6 +190,39 @@ function Tags() {
             ))}
           </div>
         )}
+
+        {/* Pagination */}
+        {totalPages > 1 && (
+          <div className="p-3 sm:p-4 lg:p-6 border-t border-gray-200">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+              <div className="text-xs sm:text-sm text-gray-700 text-center sm:text-left">
+                Showing {currentPage * pageSize + 1} to {Math.min((currentPage + 1) * pageSize, totalElements)} of {totalElements} tags
+              </div>
+              
+              <div className="flex items-center justify-center space-x-1 sm:space-x-2">
+                <button
+                  onClick={() => setCurrentPage(prev => Math.max(0, prev - 1))}
+                  disabled={currentPage === 0}
+                  className="p-1.5 sm:p-2 border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                >
+                  <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5" />
+                </button>
+                
+                <span className="px-2 sm:px-3 py-1 sm:py-2 text-xs sm:text-sm font-medium bg-gray-50 rounded-md">
+                  Page {currentPage + 1} of {totalPages}
+                </span>
+                
+                <button
+                  onClick={() => setCurrentPage(prev => Math.min(totalPages - 1, prev + 1))}
+                  disabled={currentPage >= totalPages - 1}
+                  className="p-1.5 sm:p-2 border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                >
+                  <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Modals */}
@@ -193,7 +235,7 @@ function Tags() {
               setSelectedTag(null);
             }}
             sourceTag={selectedTag}
-            availableTags={tagData}
+            availableTags={tags}
             onMerge={handleMergeTag}
             isPending={mergeTag.isPending}
           />

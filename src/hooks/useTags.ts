@@ -1,15 +1,23 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useToast } from '../contexts/ToastContext';
 import apiClient from '../lib/axios';
-import { Tags, UpdateTagData, MergeTagData } from '../types/tag';
+import { Tags, UpdateTagData, MergeTagData, PaginatedTags } from '../types/tag';
 
 // Get all tags
-export const useTags = () => {
-  return useQuery<Tags[]>({
-    queryKey: ['tags'],
+export const useTags = (page = 0, size = 10) => {
+  return useQuery<PaginatedTags>({
+    queryKey: ['tags', page, size],
     queryFn: async () => {
-      const response = await apiClient.get('/tags/all');
-      return Array.isArray(response.data.data) ? response.data.data : [];
+      const response = await apiClient.get(`/tags?page=${page}&size=${size}`);
+      return response.data.data || {
+        content: [],
+        totalElements: 0,
+        totalPages: 0,
+        size: size,
+        number: page,
+        first: true,
+        last: true
+      };
     },
   });
 };
