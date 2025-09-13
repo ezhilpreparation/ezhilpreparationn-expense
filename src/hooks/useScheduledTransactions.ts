@@ -5,45 +5,44 @@ import apiClient from '../lib/axios';
 import { 
   ScheduledTransaction, 
   CreateScheduledTransactionData, 
-  UpdateScheduledTransactionData
+  UpdateScheduledTransactionData,
+  PaginatedScheduledTransactions
 } from '../types/scheduledTransaction';
 
-// Get upcoming scheduled transactions
-export const useUpcomingScheduledTransactions = () => {
-  return useQuery<ScheduledTransaction[]>({
-    queryKey: ['scheduled-transactions', 'upcoming'],
+// Get upcoming scheduled transactions with pagination
+export const useUpcomingScheduledTransactions = (page = 0, size = 10) => {
+  return useQuery<PaginatedScheduledTransactions>({
+    queryKey: ['scheduled-transactions', 'upcoming', page, size],
     queryFn: async () => {
-      const response = await apiClient.get('/schedules/upcoming');
-      return Array.isArray(response.data.content) ? response.data.content : [];
+      const response = await apiClient.get(`/schedules/upcoming?page=${page}&size=${size}`);
+      return response.data || {
+        content: [],
+        totalElements: 0,
+        totalPages: 0,
+        size: size,
+        number: page,
+        first: true,
+        last: true
+      };
     },
   });
 };
 
-// Get completed scheduled transactions
-export const useCompletedScheduledTransactions = () => {
-  return useQuery<ScheduledTransaction[]>({
-    queryKey: ['scheduled-transactions', 'completed'],
+// Get completed scheduled transactions with pagination
+export const useCompletedScheduledTransactions = (page = 0, size = 10) => {
+  return useQuery<PaginatedScheduledTransactions>({
+    queryKey: ['scheduled-transactions', 'completed', page, size],
     queryFn: async () => {
-      const response = await apiClient.get('/schedules/completed');
-      return Array.isArray(response.data.content) ? response.data.content : [];
-    },
-  });
-};
-
-// Get all scheduled transactions (combining upcoming and completed)
-export const useScheduledTransactions = () => {
-  return useQuery<ScheduledTransaction[]>({
-    queryKey: ['scheduled-transactions', 'all'],
-    queryFn: async () => {
-      const [upcomingResponse, completedResponse] = await Promise.all([
-        apiClient.get('/schedules/upcoming'),
-        apiClient.get('/schedules/completed')
-      ]);
-      
-      const upcoming = Array.isArray(upcomingResponse.data) ? upcomingResponse.data : [];
-      const completed = Array.isArray(completedResponse.data) ? completedResponse.data : [];
-      
-      return [...upcoming, ...completed];
+      const response = await apiClient.get(`/schedules/completed?page=${page}&size=${size}`);
+      return response.data || {
+        content: [],
+        totalElements: 0,
+        totalPages: 0,
+        size: size,
+        number: page,
+        first: true,
+        last: true
+      };
     },
   });
 };
