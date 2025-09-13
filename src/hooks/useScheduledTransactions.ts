@@ -10,7 +10,7 @@ import {
 } from '../types/scheduledTransaction';
 
 // Get upcoming scheduled transactions with pagination
-export const useUpcomingScheduledTransactions = (page = 0, size = 10) => {
+export const useUpcomingScheduledTransactions = (page = 0, size = 10, enabled = true) => {
   return useQuery<PaginatedScheduledTransactions>({
     queryKey: ['scheduled-transactions', 'upcoming', page, size],
     queryFn: async () => {
@@ -25,11 +25,12 @@ export const useUpcomingScheduledTransactions = (page = 0, size = 10) => {
         last: true
       };
     },
+    enabled,
   });
 };
 
 // Get completed scheduled transactions with pagination
-export const useCompletedScheduledTransactions = (page = 0, size = 10) => {
+export const useCompletedScheduledTransactions = (page = 0, size = 10, enabled = true) => {
   return useQuery<PaginatedScheduledTransactions>({
     queryKey: ['scheduled-transactions', 'completed', page, size],
     queryFn: async () => {
@@ -44,6 +45,7 @@ export const useCompletedScheduledTransactions = (page = 0, size = 10) => {
         last: true
       };
     },
+    enabled,
   });
 };
 

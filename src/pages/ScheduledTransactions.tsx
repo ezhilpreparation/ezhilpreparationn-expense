@@ -210,9 +210,11 @@ function ScheduledTransactions() {
         message={`Are you sure you want to delete "${transactionToDelete?.description}"?`}
         confirmText="Delete Transaction"
         confirmButtonClass="bg-red-600 hover:bg-red-700"
-        isPending={deleteTransaction.isPending}
-      />
-    </div>
+  const { data: upcomingData, isLoading: upcomingLoading } = useUpcomingScheduledTransactions(
+  const { data: completedData, isLoading: completedLoading } = useCompletedScheduledTransactions(
+    currentPage, 
+    pageSize,
+    activeTab === 1 // Only enabled when completed tab is active
   );
 }
 

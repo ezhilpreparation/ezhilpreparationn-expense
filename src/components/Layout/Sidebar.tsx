@@ -290,16 +290,15 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
                 <img
                   src="/logo1.png"
                   alt="Logo Icon"
-                  className="h-auto w-auto object-contain"  // Fixed size for condensed mode
+                  className="h-8 w-8 sm:h-10 sm:w-10 object-contain"
                 />
               ) : (
                 <img
                   src="/logo.png"
                   alt="ExpenseTrace Logo"
-                  className="h-10 lg:h-12 w-auto object-contain" // Bigger size for expanded mode
+                  className="h-8 sm:h-10 lg:h-12 w-auto object-contain"
                 />
               )}
-
             </Link>
 
             {!shouldShowCondensed && (
@@ -308,9 +307,10 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
                 className="hidden lg:block p-1.5 rounded-md text-gray-400 hover:text-gray-600 hover:bg-gray-100 focus:outline-none focus-visible:ring focus-visible:ring-indigo-300"
               >
                 <ChevronLeft
-                  className={`h-5 w-5 transition-transform duration-300}`}
+                  className="h-5 w-5 transition-transform duration-300"
                 />
-              </button>)}
+              </button>
+            )}
           </div>
         </div>
 
