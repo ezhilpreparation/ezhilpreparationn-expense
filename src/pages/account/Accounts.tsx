@@ -206,6 +206,12 @@ function Accounts() {
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
+                     <Link
+                       to={`/accounts/detail/${account.id}`}
+                       className="p-2 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-indigo-600"
+                     >
+                       <Eye className="w-4 h-4" />
+                     </Link>
                       <Link
                         to={`/accounts/edit/${account.id}`}
                         className="p-2 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-indigo-600"

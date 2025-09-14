@@ -28,6 +28,7 @@ const BudgetForm = lazy(() => import('./pages/budget/BudgetForm'));
 const BudgetAnalysis = lazy(() => import('./pages/budget/BudgetAnalysis'));
 const Accounts = lazy(() => import('./pages/account/Accounts'));
 const AccountForm = lazy(() => import('./pages/account/AccountForm'));
+const AccountDetail = lazy(() => import('./pages/account/AccountDetail'));
 const Transactions = lazy(() => import('./pages/transaction/Transactions'));
 const TransactionForm = lazy(() => import('./pages/transaction/TransactionForm'));
 const Debts = lazy(() => import('./pages/debt/Debts'));
@@ -77,6 +78,7 @@ function App() {
                 <Route path="accounts" element={<Accounts />} />
                 <Route path="accounts/add" element={<AccountForm />} />
                 <Route path="accounts/edit/:id" element={<AccountForm />} />
+               <Route path="accounts/detail/:id" element={<AccountDetail />} />
                 <Route path="transactions" element={<Transactions />} />
                 <Route path="transactions/add" element={<TransactionForm />} />
                 <Route path="transactions/edit/:id" element={<TransactionForm />} />
