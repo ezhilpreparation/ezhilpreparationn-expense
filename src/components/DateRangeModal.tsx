@@ -4,7 +4,7 @@ import { X, Calendar } from 'lucide-react';
 interface DateRangeModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onApply: (params: { type: 4 | 'all'; fromDate?: number; fromMonth?: number; fromYear?: number; toDate?: number; toMonth?: number; toYear?: number }) => void;
+  onApply: (params: { type: 4 | 'all'; from?: string; to?: string }) => void;
 }
 
 const tabs = ['Date Range', 'All Time'];
@@ -28,17 +28,16 @@ export default function DateRangeModal({ isOpen, onClose, onApply }: DateRangeMo
   const handleApply = () => {
     if (activeTab === 0) {
       // Date Range
-      const fromDateObj = new Date(fromDate);
-      const toDateObj = new Date(toDate);
+      // Convert from YYYY-MM-DD to DD-MM-YYYY format
+      const formatDateForAPI = (dateStr: string) => {
+        const [year, month, day] = dateStr.split('-');
+        return `${day}-${month}-${year}`;
+      };
       
       onApply({
         type: 4,
-        fromDate: fromDateObj.getDate(),
-        fromMonth: fromDateObj.getMonth() + 1,
-        fromYear: fromDateObj.getFullYear(),
-        toDate: toDateObj.getDate(),
-        toMonth: toDateObj.getMonth() + 1,
-        toYear: toDateObj.getFullYear(),
+        from: formatDateForAPI(fromDate),
+        to: formatDateForAPI(toDate),
       });
     } else {
       // All Time

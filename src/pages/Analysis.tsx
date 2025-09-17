@@ -43,6 +43,13 @@ function Analysis() {
   const [customParams, setCustomParams] = useState<Partial<AnalysisParams>>({});
   const [customDisplayText, setCustomDisplayText] = useState('Custom');
 
+  // Format date for display (DD-MM-YYYY to readable format)
+  const formatDisplayDate = (dateStr: string) => {
+    const [day, month, year] = dateStr.split('-');
+    const date = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+    return date.toLocaleDateString();
+  };
+
   // Build API parameters based on active tab
   const getAnalysisParams = (): AnalysisParams => {
     switch (activeTab) {
@@ -66,7 +73,7 @@ function Analysis() {
         };
       case 3: // Custom
         return {
-          type: customParams.type || 4,
+          type: customParams.type === 'all' ? 'all' : 4,
           ...customParams,
         };
       default:
@@ -116,10 +123,8 @@ function Analysis() {
     // Update display text based on custom params
     if (params.type === 'all') {
       setCustomDisplayText('All Time');
-    } else if (params.type === 4 && params.fromDate && params.toDate) {
-      const fromDate = new Date(params.fromYear!, params.fromMonth! - 1, params.fromDate);
-      const toDate = new Date(params.toYear!, params.toMonth! - 1, params.toDate);
-      setCustomDisplayText(`${fromDate.toLocaleDateString()} - ${toDate.toLocaleDateString()}`);
+    } else if (params.type === 4 && params.from && params.to) {
+      setCustomDisplayText(`${formatDisplayDate(params.from)} - ${formatDisplayDate(params.to)}`);
     } else {
       setCustomDisplayText('Custom Range');
     }
